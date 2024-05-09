@@ -1,0 +1,26 @@
+pipeline {
+  agent {
+  label 'CI-Jenkins-Slave'
+  }
+  stages {
+    stage('Cloning Git') {
+      steps {
+        checkout scm
+      }
+	}
+	
+	 stage('Deploying App to Kubernetes') {
+
+        steps {
+               sshagent(['k8s-master-node']) {
+             sh "scp -o StrictHostKeyChecking=no  k8s-deployment-service-manifest-file.yaml  ubuntu@44.207.7.157:/home/ubuntu"
+              sh "ssh -o StrictHostKeyChecking=no ubuntu@44.207.7.157 'kubectl apply -f k8s-deployment-service-manifest-file.yaml ' "
+           
+                    
+            }
+      
+      }
+    }
+	
+  }
+} 
